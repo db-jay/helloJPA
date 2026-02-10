@@ -22,18 +22,50 @@ public class JpaMain {
         try {
             // === CREATE (생성) ===
             // 새로운 Member 객체 생성
-            Member member = new Member();
-            member.setId(3L);      // ID 설정
-            member.setName("A");   // 이름 설정
+
+            // === 비영속 상태 ===
+//            Member memberA = new Member(150L, "A");
+//            Member memberB = new Member(160L, "B");
 
             // 영속성 컨텍스트에 Member 객체 저장 (아직 DB에 저장되지 않음)
             // commit() 시점에 실제 INSERT SQL이 실행됨
+
+            // 영속성 컨텍스트를 직접 플러시 (잘 사용하지 않음)
+            // em.flush();
+
+            // 준영속 상태로 전환
+            // em.detach(member) // 특정 엔티티만 준영속 상태로 전환
+            // em.clear()        // 영속성 컨텍스트를 완전히 초기화
+            // em.close()        // 영속성 컨텍스트를 종료
+
+            // === 영속성 컨텍스트 추가 상태 ===
+            /*
+            System.out.println("== before persist ==");
             em.persist(member);
+            System.out.println("== after persist ==");
+
+            Member findMember1 = em.find(Member.class, 100L);
+            Member findMember2 = em.find(Member.class, 100L);
+            System.out.println("result = " + (findMember1 == findMember2));
+            */
+
+            // === 트랜잭션을 지원하는 쓰기 지연(transactional write-behind) ===
+//            em.persist(memberA);
+//            em.persist(memberB);
+
+
+            Member member = em.find(Member.class, 150L);
+            member.setName("JAY"); // JAVA collection 처럼 작동하기 때문에 .persist() 하지 않아도 됨
+
+            System.out.println("=======");
+
+            tx.commit();
+
 
             // === READ (조회) ===
             // 데이터베이스에서 ID가 3L인 Member 조회
             // 1차 캐시에 있으면 DB에 가지 않고 캐시에서 반환
-            Member findMember = em.find(Member.class, 3L);
+//            Member findMember = em.find(Member.class, 3L);
 
             // 조회 결과 출력
 //            System.out.println("findMember = " + findMember.getId());
@@ -43,7 +75,7 @@ public class JpaMain {
             // JPA의 변경 감지(Dirty Checking) 기능
             // 단순히 값을 변경하면 JPA가 자동으로 UPDATE SQL 생성
             // 별도의 update 메서드 호출 불필요!
-            findMember.setName("B");
+//            findMember.setName("B");
 
             // === DELETE (삭제) ===
             // 엔티티 삭제 (현재 주석 처리됨)
