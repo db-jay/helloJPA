@@ -1,0 +1,72 @@
+
+package hellojpa;
+
+import jakarta.persistence.*;
+
+public class JpaMain {
+
+    public static void main(String[] args) {
+
+        // 1. EntityManagerFactory 생성 - 애플리케이션 전체에서 하나만 생성해서 공유
+        // "hello"는 persistence.xml에서 정의한 persistence-unit 이름
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        // 2. EntityManager 생성 - 실제 DB와 연결하고 작업을 수행하는 객체
+        // 쓰레드 간에 공유하면 안되고, 사용 후 반드시 닫아야 함
+        EntityManager em = emf.createEntityManager();
+
+        // 3. 트랜잭션 시작 - JPA에서 모든 데이터 변경은 트랜잭션 내에서 실행되어야 함
+        EntityTransaction tx = em.getTransaction();
+        tx.begin(); // 트랜잭션 시작
+
+        try {
+            // === CREATE (생성) ===
+            // 새로운 Member 객체 생성
+            Member member = new Member();
+            member.setId(3L);      // ID 설정
+            member.setName("A");   // 이름 설정
+
+            // 영속성 컨텍스트에 Member 객체 저장 (아직 DB에 저장되지 않음)
+            // commit() 시점에 실제 INSERT SQL이 실행됨
+            em.persist(member);
+
+            // === READ (조회) ===
+            // 데이터베이스에서 ID가 3L인 Member 조회
+            // 1차 캐시에 있으면 DB에 가지 않고 캐시에서 반환
+            Member findMember = em.find(Member.class, 3L);
+
+            // 조회 결과 출력
+//            System.out.println("findMember = " + findMember.getId());
+//            System.out.println("findMember = " + findMember.getName());
+
+            // === UPDATE (수정) ===
+            // JPA의 변경 감지(Dirty Checking) 기능
+            // 단순히 값을 변경하면 JPA가 자동으로 UPDATE SQL 생성
+            // 별도의 update 메서드 호출 불필요!
+            findMember.setName("B");
+
+            // === DELETE (삭제) ===
+            // 엔티티 삭제 (현재 주석 처리됨)
+            // commit() 시점에 DELETE SQL이 실행됨
+//            em.remove(findMember);
+
+            // 4. 트랜잭션 커밋 - 실제 SQL이 DB에 반영되는 시점
+            // 이 시점에 INSERT, UPDATE, DELETE SQL이 DB로 전송됨
+            tx.commit();
+
+        } catch (Exception e) {
+            // 예외 발생 시 오류 내용 출력
+            e.printStackTrace();
+            // 트랜잭션 롤백 - 모든 변경사항 취소
+            tx.rollback();
+        } finally {
+            // 5. EntityManager 닫기 - 리소스 해제 (필수!)
+            // finally 블록에서 반드시 닫아야 함
+            em.close();
+        }
+
+        // 6. EntityManagerFactory 닫기 - 애플리케이션 종료 시점에 닫기
+        // 내부적으로 커넥션 풀 등의 리소스 해제
+        emf.close();
+    }
+}
