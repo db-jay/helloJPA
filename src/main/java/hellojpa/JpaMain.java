@@ -54,9 +54,29 @@ public class JpaMain {
 //            em.persist(memberB);
 
 
-            Member member = em.find(Member.class, 150L);
-            member.setName("JAY"); // JAVA collection 처럼 작동하기 때문에 .persist() 하지 않아도 됨
+            /*Member member = em.find(Member.class, 150L);
+            member.setUsername("jay"); // JAVA collection 처럼 작동하기 때문에 .persist() 하지 않아도 됨*/
 
+
+
+            Member memberA = new Member();
+            memberA.setUsername("A");
+
+            Member memberB = new Member();
+            memberB.setUsername("B");
+
+            Member memberC = new Member();
+            memberC.setUsername("C");
+
+
+            System.out.println("=======");
+            em.persist(memberA);
+//            em.persist(memberB);
+//            em.persist(memberC);
+
+            System.out.println("memberA = " + memberA.getId());
+            System.out.println("memberB = " + memberB.getId());
+            System.out.println("memberC = " + memberC.getId());
             System.out.println("=======");
 
             tx.commit();
