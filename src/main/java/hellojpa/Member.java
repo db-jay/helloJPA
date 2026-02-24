@@ -25,6 +25,10 @@ public class Member {
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
     public Long getId() {
         return id;
     }
@@ -49,5 +53,17 @@ public class Member {
     public void changeTeam(Team team) { // changeTeam으로 메서드명 변경하여 가독성 확보
         this.team = team;
         team.getMembers().add(this); // team을 set하는 시점에 양쪽에 값을 설정(연관관계 편의 메소드)
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public Locker getLocker() {
+        return locker;
+    }
+
+    public void setLocker(Locker locker) {
+        this.locker = locker;
     }
 }

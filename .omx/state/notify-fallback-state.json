@@ -1,0 +1,9 @@
+{
+  "pid": 97887,
+  "started_at": "2026-02-17T12:01:30.155Z",
+  "cwd": "/Users/sinae/git/helloJPA",
+  "notify_script": "/Users/sinae/.npm-global/lib/node_modules/oh-my-codex/scripts/notify-hook.js",
+  "poll_ms": 700,
+  "tracked_files": 1,
+  "seen_turns": 0
+}
